@@ -13,11 +13,9 @@ object BuildSettings {
         "-Xlint",
         "-deprecation",
         "-unchecked",
-        "-feature",
-        "-Ypartial-unification"
+        "-feature"
       ),
       parallelExecution in Test := true,
       fork in Test := true
     )
 }
-
