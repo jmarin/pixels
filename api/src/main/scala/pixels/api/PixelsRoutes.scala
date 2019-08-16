@@ -9,4 +9,15 @@ trait PixelsRoutes {
         complete("PIXELS")
       }
     }
+
+  val uploadRoute: Route = ???
+
+  val deletePictureRoute: Route = ???
+
+  val filterPicturesRoute: Route = ???
+
+  val pictureInfoRoute: Route = ???
+
+  val ratePictureRoute: Route = ???
+
 }
