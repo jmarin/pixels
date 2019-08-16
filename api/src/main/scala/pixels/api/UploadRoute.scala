@@ -18,8 +18,8 @@ trait UploadRoute {
   private def uploadImage(implicit materializer: ActorMaterializer): Route = {
     fileUpload("file") {
       case (metadata, byteSource)
-          if metadata.fileName.toLowerCase.contains(".jpg") || metadata.fileName.toLowerCase
-            .contains(".jpeg") =>
+          if metadata.fileName.toLowerCase.endsWith(".jpg") || metadata.fileName.toLowerCase
+            .endsWith(".jpeg") =>
         val fUploaded = byteSource
           .runWith(Sink.ignore)
 

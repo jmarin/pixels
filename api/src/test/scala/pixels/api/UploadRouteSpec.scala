@@ -17,11 +17,20 @@ class UploadRouteSpec
   implicit val timeout = RouteTestTimeout(5.seconds.dilated)
 
   val textFile = multipartFile("some text contents", "sample.txt")
+  val binaryFile =
+    multipartFile(Array.fill(20)((scala.util.Random.nextInt(256) - 128).toByte), "sample.jpg")
+
+  val url = s"/upload"
 
   "Upload Image Service" should {
     "return 400 when trying to upload a file that is not an image" in {
-      Post("/upload", textFile) ~> uploadImageRoute ~> check {
+      Post(url, textFile) ~> uploadImageRoute ~> check {
         status shouldBe StatusCodes.BadRequest
+      }
+    }
+    "return 202 when uploading a file with .jpg or .jpeg extension" in {
+      Post(url, binaryFile) ~> uploadImageRoute ~> check {
+        status shouldBe StatusCodes.Accepted
       }
     }
   }
