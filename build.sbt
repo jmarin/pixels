@@ -8,7 +8,14 @@ lazy val pixels = (project in file("."))
 lazy val api = (project in file("api"))
   .settings(pixelsBuildSettings: _*)
   .settings(
-    libraryDependencies ++= Seq(akkaHttp, akka, akkaTyped, akkaStream, akkaStreamTyped)
+    libraryDependencies ++= Seq(
+      akkaHttp,
+      akka,
+      akkaTyped,
+      akkaStream,
+      akkaStreamTestkit,
+      akkaHttpTestkit
+    )
   )
 
 lazy val protobuf = (project in file("protobuf"))

@@ -16,7 +16,7 @@ trait UploadRoute {
     }
 
   private def uploadImage(implicit materializer: ActorMaterializer): Route = {
-    fileUpload("picture") {
+    fileUpload("file") {
       case (metadata, byteSource)
           if metadata.fileName.toLowerCase.contains(".jpg") || metadata.fileName.toLowerCase
             .contains(".jpeg") =>

@@ -1,5 +1,6 @@
 import sbt.Keys._
 import sbt._
+import Dependencies._
 
 object BuildSettings {
   val buildScalaVersion = "2.13.0"
@@ -16,6 +17,7 @@ object BuildSettings {
         "-feature"
       ),
       parallelExecution in Test := true,
-      fork in Test := true
+      fork in Test := true,
+      libraryDependencies ++= Seq(scalatest)
     )
 }
