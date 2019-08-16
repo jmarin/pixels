@@ -20,16 +20,16 @@ class UploadRouteSpec
   val binaryFile =
     multipartFile(Array.fill(20)((scala.util.Random.nextInt(256) - 128).toByte), "sample.jpg")
 
-  val url = s"/upload"
+  val url = s"/upload/image"
 
   "Upload Image Service" should {
     "return 400 when trying to upload a file that is not an image" in {
-      Post(url, textFile) ~> uploadImageRoute ~> check {
+      Post(url, textFile) ~> uploadRoute ~> check {
         status shouldBe StatusCodes.BadRequest
       }
     }
     "return 202 when uploading a file with .jpg or .jpeg extension" in {
-      Post(url, binaryFile) ~> uploadImageRoute ~> check {
+      Post(url, binaryFile) ~> uploadRoute ~> check {
         status shouldBe StatusCodes.Accepted
       }
     }

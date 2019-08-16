@@ -17,6 +17,8 @@ lazy val api = (project in file("api"))
       akkaHttpTestkit
     )
   )
+  .dependsOn(protobuf)
 
 lazy val protobuf = (project in file("protobuf"))
+  .enablePlugins(AkkaGrpcPlugin)
   .settings(pixelsBuildSettings: _*)
