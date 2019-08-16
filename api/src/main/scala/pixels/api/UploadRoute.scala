@@ -10,27 +10,34 @@ import scala.util.{Success, Failure}
 
 trait UploadRoute {
 
-  def uploadImageRoute(implicit mat: ActorMaterializer): Route =
-    path("upload") {
-      uploadImage
+  def uploadRoute(implicit mat: ActorMaterializer): Route =
+    pathPrefix("upload") {
+      pathEndOrSingleSlash {
+        getFromResource("web/index.html")
+      } ~
+        path("image") {
+          uploadImage
+        }
     }
 
   private def uploadImage(implicit materializer: ActorMaterializer): Route = {
     fileUpload("file") {
-      case (metadata, byteSource)
-          if metadata.fileName.toLowerCase.endsWith(".jpg") || metadata.fileName.toLowerCase
-            .endsWith(".jpeg") =>
-        val fUploaded = byteSource
-          .runWith(Sink.ignore)
+      case (metadata, byteSource) =>
+        if (metadata.fileName.toLowerCase.endsWith(".jpg") || metadata.fileName.toLowerCase
+              .endsWith(".jpeg")) {
+          val fUploaded = byteSource
+            .runWith(Sink.foreach(println))
 
-        onComplete(fUploaded) {
-          case Success(_) =>
-            complete(StatusCodes.Accepted)
-          case Failure(e) =>
-            complete(ToResponseMarshallable(StatusCodes.BadRequest))
+          onComplete(fUploaded) {
+            case Success(_) =>
+              complete(StatusCodes.Accepted)
+            case Failure(e) =>
+              e.printStackTrace()
+              complete(ToResponseMarshallable(StatusCodes.BadRequest))
+          }
+        } else {
+          complete(StatusCodes.BadRequest)
         }
-      case _ =>
-        complete(ToResponseMarshallable(StatusCodes.BadRequest))
     }
   }
 }

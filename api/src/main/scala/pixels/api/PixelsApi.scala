@@ -17,7 +17,7 @@ object PixelsApi extends App with PixelsRoutes with UploadRoute {
 
   val config = ConfigFactory.load()
 
-  val name = "pixels-api"
+  val name = config.getString("pixels.api.http.name")
   val host: String = config.getString("pixels.api.http.host")
   val port: Int = config.getInt("pixels.api.http.port")
 
@@ -27,7 +27,7 @@ object PixelsApi extends App with PixelsRoutes with UploadRoute {
       implicit val materializer: ActorMaterializer = ActorMaterializer()(untypedSystem)
       implicit val ec: ExecutionContext = ctx.system.executionContext
 
-      val routes = defaultRoute ~ uploadImageRoute
+      val routes = defaultRoute ~ uploadRoute
 
       val serverBinding: Future[ServerBinding] =
         Http()(untypedSystem).bindAndHandle(routes, host, port)
