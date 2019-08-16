@@ -16,7 +16,6 @@ trait FileUploadUtils {
   }
 
   def multipartFile(contents: Array[Byte], fileName: String): FormData = {
-    val bytes = Array.fill(20)((scala.util.Random.nextInt(256) - 128).toByte)
     Multipart.FormData(
       Multipart.FormData.BodyPart.Strict(
         "file",
