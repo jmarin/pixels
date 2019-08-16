@@ -19,7 +19,7 @@ trait FileUploadUtils {
     Multipart.FormData(
       Multipart.FormData.BodyPart.Strict(
         "file",
-        HttpEntity(ContentTypes.`application/octet-stream`, bytes),
+        HttpEntity(ContentTypes.`application/octet-stream`, contents),
         Map("filename" -> fileName)
       )
     )
