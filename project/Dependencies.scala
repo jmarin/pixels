@@ -1,6 +1,7 @@
 import sbt._
 
 object Dependencies {
+  lazy val logback = "ch.qos.logback" % "logback-classic" % Version.logback
   lazy val scalatest = "org.scalatest" %% "scalatest" % Version.scalatest
   lazy val akkaHttp = "com.typesafe.akka" %% "akka-http" % Version.akkaHttp
   lazy val akka = "com.typesafe.akka" %% "akka-actor" % Version.akka
