@@ -3,7 +3,7 @@ import Dependencies._
 
 lazy val pixels = (project in file("."))
   .settings(pixelsBuildSettings: _*)
-  .aggregate(api)
+  .aggregate(api, `pixels-management`)
 
 lazy val api = (project in file("api"))
   .settings(pixelsBuildSettings: _*)
@@ -23,3 +23,11 @@ lazy val api = (project in file("api"))
 lazy val protobuf = (project in file("protobuf"))
   .enablePlugins(AkkaGrpcPlugin)
   .settings(pixelsBuildSettings: _*)
+
+lazy val `pixels-management` = (project in file("pixels-management"))
+  .settings(pixelsBuildSettings: _*)
+  .settings(
+    libraryDependencies ++= Seq(
+      akkaTypedClusterSharding
+    )
+  )
