@@ -24,7 +24,7 @@ trait UploadRoute {
         }
     }
 
-  private def uploadImage(implicit materializer: ActorMaterializer): Route = {
+  private def uploadImage(implicit materializer: ActorMaterializer): Route =
     fileUpload("file") {
       case (metadata, byteSource) =>
         if (metadata.fileName.toLowerCase.endsWith(".jpg") || metadata.fileName.toLowerCase
@@ -43,7 +43,6 @@ trait UploadRoute {
           complete(StatusCodes.BadRequest)
         }
     }
-  }
 
   private def uploadToS3(
       source: Source[ByteString, _],
