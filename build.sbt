@@ -14,7 +14,8 @@ lazy val api = (project in file("api"))
       akkaTyped,
       akkaStream,
       akkaStreamTestkit,
-      akkaHttpTestkit
+      akkaHttpTestkit,
+      alpakkaS3
     )
   )
   .dependsOn(protobuf)

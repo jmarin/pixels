@@ -4,9 +4,13 @@ import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model.StatusCodes
-import akka.stream.scaladsl.Sink
+import akka.stream.scaladsl.{Source, Sink}
 import akka.stream.ActorMaterializer
 import scala.util.{Success, Failure}
+import akka.stream.alpakka.s3.scaladsl.S3
+import scala.concurrent.Future
+import akka.util.ByteString
+import akka.stream.alpakka.s3.MultipartUploadResult
 
 trait UploadRoute {
 
@@ -26,8 +30,7 @@ trait UploadRoute {
         if (metadata.fileName.toLowerCase.endsWith(".jpg") || metadata.fileName.toLowerCase
               .endsWith(".jpeg")) {
 
-          val fUploaded = byteSource
-            .runWith(Sink.foreach(println))
+          val fUploaded = uploadToS3(byteSource, "pixels-demo", s"images/${metadata.fileName}")
 
           onComplete(fUploaded) {
             case Success(_) =>
@@ -40,5 +43,16 @@ trait UploadRoute {
           complete(StatusCodes.BadRequest)
         }
     }
+  }
+
+  private def uploadToS3(
+      source: Source[ByteString, _],
+      bucket: String,
+      bucketKey: String
+  )(implicit mat: ActorMaterializer): Future[MultipartUploadResult] = {
+
+    val s3Sink: Sink[ByteString, Future[MultipartUploadResult]] =
+      S3.multipartUpload(bucket, bucketKey)
+    source.runWith(s3Sink)
   }
 }
