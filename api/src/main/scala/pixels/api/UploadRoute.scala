@@ -25,6 +25,7 @@ trait UploadRoute {
       case (metadata, byteSource) =>
         if (metadata.fileName.toLowerCase.endsWith(".jpg") || metadata.fileName.toLowerCase
               .endsWith(".jpeg")) {
+
           val fUploaded = byteSource
             .runWith(Sink.foreach(println))
 

@@ -34,7 +34,7 @@ object PixelsApi extends App with PixelsRoutes with UploadRoute {
 
       serverBinding.onComplete {
         case Success(bound) =>
-          println(s"Server running at $host:$port")
+          println(s"Service $name running at $host:$port")
         case Failure(e) =>
           e.printStackTrace()
           ctx.self ! Done
