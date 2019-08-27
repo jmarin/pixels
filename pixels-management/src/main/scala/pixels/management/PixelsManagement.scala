@@ -22,16 +22,18 @@ object PixelsManagement {
 
   final case class RateImage(rating: Int, replyTo: ActorRef[Rating]) extends PixelsManagementCommand
 
-  final case class GetImage(s3Url: String, replyTo: ActorRef[PixelsMetadata])
+  final case class GetImageInfo(s3Url: String, replyTo: ActorRef[PixelsMetadata])
       extends PixelsManagementCommand
 
-  final case class RemoveImage(replyTo: ActorRef[PixelsRemoved]) extends PixelsManagementCommand
+  final case class RemoveImageInfo(replyTo: ActorRef[PixelsRemoved]) extends PixelsManagementCommand
 
   // Responses
 
   sealed trait PixelsManagementResponse
 
   final case class PixelsManagementSuccess() extends PixelsManagementResponse
+
+  final case class PixelsManagementFailure() extends PixelsManagementResponse
 
   final case class Rating(s3Url: String, rating: Int) extends PixelsManagementResponse
 
@@ -75,16 +77,16 @@ object PixelsManagement {
             .persist({ PixelsInfoAdded(PixelsMetadata(s3Url, width, height)) })
             .thenRun(state => replyTo ! state.metadata)
 
-        case GetImage(s3Url, replyTo) =>
+        case GetImageInfo(s3Url, replyTo) =>
           Effect.none
             .thenRun(state => replyTo ! state.metadata)
 
         case RateImage(rating, replyTo) =>
           Effect
             .persist(PixelsRated(rating))
-            .thenRun(state => Rating(state.metadata.s3Url, rating))
+            .thenRun(state => replyTo ! Rating(state.metadata.s3Url, rating))
 
-        case RemoveImage(replyTo) =>
+        case RemoveImageInfo(replyTo) =>
           Effect
             .persist(PixelsRemoved(prevState.metadata.s3Url))
             .thenRun(state => replyTo ! PixelsRemoved(state.metadata.s3Url))
