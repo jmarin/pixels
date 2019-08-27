@@ -18,6 +18,6 @@ object BuildSettings {
       ),
       parallelExecution in Test := true,
       fork in Test := true,
-      libraryDependencies ++= Seq(scalatest)
+      libraryDependencies ++= Seq(logback, scalatest)
     )
 }
