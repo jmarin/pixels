@@ -3,12 +3,23 @@ import Dependencies._
 
 lazy val pixels = (project in file("."))
   .settings(pixelsBuildSettings: _*)
-  .aggregate(api, `pixels-management`)
+  .aggregate(common, api, `pixels-management`)
+
+lazy val commonDeps = Seq(logback, scalatest, scalacheck)
+
+lazy val common = (project in file("common"))
+  .settings(pixelsBuildSettings: _*)
+  .settings(
+    libraryDependencies ++= commonDeps ++ Seq(
+      akkaTyped,
+      akkaTypedClusterSharding
+    )
+  )
 
 lazy val api = (project in file("api"))
   .settings(pixelsBuildSettings: _*)
   .settings(
-    libraryDependencies ++= Seq(
+    libraryDependencies ++= commonDeps ++ Seq(
       akkaHttp,
       akka,
       akkaTyped,
@@ -27,7 +38,8 @@ lazy val protobuf = (project in file("protobuf"))
 lazy val `pixels-management` = (project in file("pixels-management"))
   .settings(pixelsBuildSettings: _*)
   .settings(
-    libraryDependencies ++= Seq(
-      akkaTypedClusterSharding
+    libraryDependencies ++= commonDeps ++ Seq(
+      akkaPersistenceInMemory
     )
   )
+  .dependsOn(common)

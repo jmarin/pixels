@@ -9,7 +9,8 @@ object Dependencies {
   )
 
   lazy val logback = "ch.qos.logback" % "logback-classic" % Version.logback
-  lazy val scalatest = "org.scalatest" %% "scalatest" % Version.scalatest
+  lazy val scalatest = "org.scalatest" %% "scalatest" % Version.scalatest % Test
+  lazy val scalacheck = "org.scalacheck" %% "scalacheck" % Version.scalacheck % Test
   lazy val akkaHttp = "com.typesafe.akka" %% "akka-http" % Version.akkaHttp
   lazy val akka = "com.typesafe.akka" %% "akka-actor" % Version.akka
   lazy val akkaTyped = "com.typesafe.akka" %% "akka-actor-typed" % Version.akka
@@ -21,4 +22,5 @@ object Dependencies {
   lazy val alpakkaS3 = "com.lightbend.akka" %% "akka-stream-alpakka-s3" % Version.alpakka
   lazy val akkaPersistenceCassandra = "com.typesafe.akka" %% "akka-persistence-cassandra" % Version.akkaPersistenceCassandra
   lazy val cassandraLauncher = "com.typesafe.akka" %% "akka-persistence-cassandra-launcher" % Version.akkaPersistenceCassandra % Test
+  lazy val akkaPersistenceInMemory = "com.github.dnvriend" %% "akka-persistence-inmemory" % Version.akkaPersistenceInMemory % Test
 }

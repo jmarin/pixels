@@ -17,7 +17,6 @@ object BuildSettings {
         "-feature"
       ),
       parallelExecution in Test := true,
-      fork in Test := true,
-      libraryDependencies ++= Seq(logback, scalatest)
+      fork in Test := true
     )
 }
