@@ -11,7 +11,9 @@ import akka.actor.testkit.typed.scaladsl.TestProbe
 import akka.cluster.typed.Cluster
 import akka.cluster.typed.Join
 import akka.cluster.sharding.typed.scaladsl.ClusterSharding
-import pixels.management.ImageMetadataEntity.AddImageMetadata
+import pixels.management.ImageMetadataEntity.{AddImageMetadata, GetImageMetadata}
+import pixels.management.ImageMetadataEntity.RateImage
+import pixels.management.ImageMetadataEntity.RemoveImageMetadata
 
 class ImageMetadataEntitySpec extends WordSpec with Matchers with BeforeAndAfterAll {
 
@@ -22,6 +24,7 @@ class ImageMetadataEntitySpec extends WordSpec with Matchers with BeforeAndAfter
   val pixelMetadata1 = pixelsMetadataGen.sample.getOrElse(PixelsMetadata())
 
   val imageDoneProbe = TestProbe[Done]("image-info-probe")
+  val imageMetadataProbe = TestProbe[Option[PixelsMetadata]]
 
   val sharding = ClusterSharding(system)
   ImageMetadataEntity.startShardRegion(sharding)
@@ -33,12 +36,40 @@ class ImageMetadataEntitySpec extends WordSpec with Matchers with BeforeAndAfter
 
   "Image Metadata" should {
     Cluster(system).manager ! Join(Cluster(system).selfMember.address)
-    "be persisted" in {
+    "persist" in {
       val imageMetadata =
         sharding.entityRefFor(ImageMetadataEntity.TypeKey, s"${ImageMetadataEntity.name}-ABC12345")
 
       imageMetadata ! AddImageMetadata(pixelMetadata1, imageDoneProbe.ref)
       imageDoneProbe.expectMessage(Done)
+
+      imageMetadata ! GetImageMetadata(imageMetadataProbe.ref)
+      imageMetadataProbe.expectMessage(Some(pixelMetadata1))
+
+    }
+
+    "update rating" in {
+      val imageMetadata =
+        sharding.entityRefFor(ImageMetadataEntity.TypeKey, s"${ImageMetadataEntity.name}-ABC12345")
+
+      imageMetadata ! RateImage(3, imageDoneProbe.ref)
+      imageDoneProbe.expectMessage(Done)
+
+      imageMetadata ! GetImageMetadata(imageMetadataProbe.ref)
+      imageMetadataProbe.expectMessage(Some(pixelMetadata1.copy(rating = 3)))
+
+    }
+
+    "delete" in {
+      val imageMetadata =
+        sharding.entityRefFor(ImageMetadataEntity.TypeKey, s"${ImageMetadataEntity.name}-ABC12345")
+
+      imageMetadata ! RemoveImageMetadata(imageDoneProbe.ref)
+      imageDoneProbe.expectMessage(Done)
+
+      imageMetadata ! GetImageMetadata(imageMetadataProbe.ref)
+      imageMetadataProbe.expectMessage(None)
+
     }
   }
 

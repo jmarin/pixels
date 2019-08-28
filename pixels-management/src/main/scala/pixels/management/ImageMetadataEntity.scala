@@ -24,11 +24,20 @@ object ImageMetadataEntity {
   final case class AddImageMetadata(metadata: PixelsMetadata, replyTo: ActorRef[Done])
       extends ImageMetadataCommand
 
+  //TODO: complete commands (rate, remove)
+  final case class RateImage(rating: Int, replyTo: ActorRef[Done]) extends ImageMetadataCommand
+  final case class GetImageMetadata(replyTo: ActorRef[Option[PixelsMetadata]])
+      extends ImageMetadataCommand
+  final case class RemoveImageMetadata(replyTo: ActorRef[Done]) extends ImageMetadataCommand
+
   //Event
   sealed trait ImageMetadataEvent
   final case class ImageMetadataAdded(metadata: PixelsMetadata) extends ImageMetadataEvent
+  final case class ImageMetadataRated(rating: Int) extends ImageMetadataEvent
+  case object ImageMetadataRemoved extends ImageMetadataEvent
 
   //Reply
+  case class ImageMetadata(metadata: PixelsMetadata)
 
   //State
   final case class ImageMetadataState(metadata: Option[PixelsMetadata])
@@ -51,12 +60,44 @@ object ImageMetadataEntity {
           } else {
             Effect.none
           }
+
+        case GetImageMetadata(replyTo) =>
+          replyTo ! state.metadata
+          Effect.none
+
+        case RateImage(rating, replyTo) =>
+          if (state.metadata.isDefined) {
+            Effect
+              .persist(ImageMetadataRated(rating))
+              .thenRun { _ =>
+                log.debug(s"Image rated with rating: $rating")
+                replyTo ! Done
+              }
+          } else {
+            Effect.none
+          }
+
+        case RemoveImageMetadata(replyTo) =>
+          if (state.metadata.isDefined) {
+            Effect
+              .persist(ImageMetadataRemoved)
+              .thenRun { _ =>
+                log.debug(s"Image removed: ${state.metadata.getOrElse(PixelsMetadata).toString}")
+                replyTo ! Done
+              }
+          } else {
+            Effect.none
+          }
       }
   }
 
   //Event Handler
   def eventHandler: (ImageMetadataState, ImageMetadataEvent) => ImageMetadataState = {
     case (state, ImageMetadataAdded(m)) => state.copy(Some(m))
+    case (state, ImageMetadataRated(rating)) =>
+      val newMetadata = state.metadata.map(_.copy(rating = rating))
+      state.copy(metadata = newMetadata)
+    case (state, ImageMetadataRemoved) => state.copy(None)
   }
 
   def behavior(entityId: String): Behavior[ImageMetadataCommand] =
