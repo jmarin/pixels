@@ -7,6 +7,7 @@ import akka.http.scaladsl.model.StatusCodes
 import akka.stream.ActorMaterializer
 import scala.util.{Success, Failure}
 import pixels.s3.S3Utils
+import akka.http.scaladsl.model.MediaTypes
 
 trait UploadRoute extends S3Utils {
 
@@ -26,7 +27,12 @@ trait UploadRoute extends S3Utils {
         if (metadata.fileName.toLowerCase.endsWith(".jpg") || metadata.fileName.toLowerCase
               .endsWith(".jpeg")) {
 
-          val fUploaded = uploadToS3(byteSource, "pixels-demo", s"images/${metadata.fileName}")
+          val fUploaded = uploadToS3(
+            byteSource,
+            "pixels-demo",
+            s"images/${metadata.fileName}",
+            MediaTypes.`image/jpeg`
+          )
 
           onComplete(fUploaded) {
             case Success(_) =>

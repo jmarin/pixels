@@ -50,3 +50,4 @@ lazy val `metadata-extractor` = (project in file("metadata-extractor"))
       commonsImaging
     )
   )
+  .dependsOn(common)
