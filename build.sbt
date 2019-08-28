@@ -3,7 +3,7 @@ import Dependencies._
 
 lazy val pixels = (project in file("."))
   .settings(pixelsBuildSettings: _*)
-  .aggregate(common, api, `pixels-management`)
+  .aggregate(common, api, `pixels-management`, `metadata-extractor`)
 
 lazy val commonDeps = Seq(logback, scalatest, scalacheck)
 
@@ -12,7 +12,10 @@ lazy val common = (project in file("common"))
   .settings(
     libraryDependencies ++= commonDeps ++ Seq(
       akkaTyped,
-      akkaTypedClusterSharding
+      akkaTypedClusterSharding,
+      akkaStream,
+      alpakkaS3,
+      akkaStreamTestkit
     )
   )
 
@@ -22,14 +25,10 @@ lazy val api = (project in file("api"))
     libraryDependencies ++= commonDeps ++ Seq(
       akkaHttp,
       akka,
-      akkaTyped,
-      akkaStream,
-      akkaStreamTestkit,
-      akkaHttpTestkit,
-      alpakkaS3
+      akkaHttpTestkit
     )
   )
-  .dependsOn(protobuf)
+  .dependsOn(protobuf, common)
 
 lazy val protobuf = (project in file("protobuf"))
   .enablePlugins(AkkaGrpcPlugin)
@@ -43,3 +42,11 @@ lazy val `pixels-management` = (project in file("pixels-management"))
     )
   )
   .dependsOn(common)
+
+lazy val `metadata-extractor` = (project in file("metadata-extractor"))
+  .settings(pixelsBuildSettings: _*)
+  .settings(
+    libraryDependencies ++= commonDeps ++ Seq(
+      commonsImaging
+    )
+  )
