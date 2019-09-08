@@ -23,8 +23,6 @@ object ImageMetadataEntity {
   sealed trait ImageMetadataCommand
   final case class AddImageMetadata(metadata: PixelsMetadata, replyTo: ActorRef[Done])
       extends ImageMetadataCommand
-
-  //TODO: complete commands (rate, remove)
   final case class RateImage(rating: Int, replyTo: ActorRef[Done]) extends ImageMetadataCommand
   final case class GetImageMetadata(replyTo: ActorRef[Option[PixelsMetadata]])
       extends ImageMetadataCommand
