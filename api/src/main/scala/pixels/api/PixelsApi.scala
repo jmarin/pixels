@@ -13,7 +13,7 @@ import scala.util.{Success, Failure}
 import akka.http.scaladsl.Http.ServerBinding
 import com.typesafe.config.ConfigFactory
 
-object PixelsApi extends App with PixelsRoutes with UploadRoute {
+object PixelsApi extends App with UploadRoute {
 
   val config = ConfigFactory.load()
 
@@ -27,7 +27,7 @@ object PixelsApi extends App with PixelsRoutes with UploadRoute {
       implicit val materializer: ActorMaterializer = ActorMaterializer()(untypedSystem)
       implicit val ec: ExecutionContext = ctx.system.executionContext
 
-      val routes = defaultRoute ~ uploadRoute
+      val routes = uploadRoute
 
       val serverBinding: Future[ServerBinding] =
         Http()(untypedSystem).bindAndHandle(routes, host, port)
@@ -47,4 +47,5 @@ object PixelsApi extends App with PixelsRoutes with UploadRoute {
     },
     name
   )
+
 }
