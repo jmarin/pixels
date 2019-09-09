@@ -1,6 +1,0 @@
-*.class
-*.log
-
-target/
-.bloop/
-.metals/
