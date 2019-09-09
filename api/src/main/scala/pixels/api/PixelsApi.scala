@@ -12,7 +12,7 @@ import scala.util.{Success, Failure}
 import akka.http.scaladsl.Http.ServerBinding
 import com.typesafe.config.ConfigFactory
 
-object PixelsApi extends App with UploadRoute {
+object PixelsApi extends App with S3ImageRoute {
 
   val config = ConfigFactory.load()
 

@@ -9,16 +9,21 @@ import scala.util.{Success, Failure}
 import pixels.s3.S3Utils
 import akka.http.scaladsl.model.MediaTypes
 
-trait UploadRoute extends S3Utils {
+trait S3ImageRoute extends S3Utils {
 
   def uploadRoute(implicit mat: ActorMaterializer): Route =
     pathPrefix("upload") {
       pathEndOrSingleSlash {
         getFromResource("web/index.html")
-      } ~
-        path("image") {
-          uploadImage
-        }
+      }
+    } ~
+      path("images") {
+        uploadImage
+      }
+
+  def deleteRoute: Route =
+    path("images" / Segment) { id =>
+      complete("deleted")
     }
 
   private def uploadImage(implicit materializer: ActorMaterializer): Route =

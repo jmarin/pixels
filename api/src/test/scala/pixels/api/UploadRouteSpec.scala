@@ -13,7 +13,7 @@ class UploadRouteSpec
     with Matchers
     with ScalatestRouteTest
     with FileUploadUtils
-    with UploadRoute
+    with S3ImageRoute
     with BeforeAndAfterAll {
 
   implicit val timeout = RouteTestTimeout(5.seconds.dilated)
@@ -22,7 +22,7 @@ class UploadRouteSpec
   val binaryFile =
     multipartFile(Array.fill(20)((scala.util.Random.nextInt(256) - 128).toByte), "sample.jpg")
 
-  val url = s"/upload/image"
+  val url = s"/images"
 
   override def beforeAll(): Unit = {}
 
