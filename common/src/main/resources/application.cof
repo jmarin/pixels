@@ -1,0 +1,6 @@
+
+supervisor {
+    minBackOff = 10
+    maxBackOff = 60
+    randomFactor = 0.1
+}
