@@ -29,3 +29,13 @@ lazy val api = (project in file("api"))
     )
   )
   .dependsOn(common)
+
+lazy val management = (project in file("management"))
+  .settings(pixelsBuildSettings: _*)
+  .settings(
+    libraryDependencies ++= commonDeps ++ Seq(
+      akkaTypedClusterSharding,
+      akkaStream,
+      akkaPersistenceInMemory
+    )
+  )
