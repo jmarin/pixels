@@ -6,17 +6,15 @@ import akka.actor.testkit.typed.scaladsl.ActorTestKit
 import akka.cluster.sharding.typed.scaladsl.ClusterSharding
 import akka.cluster.typed.Cluster
 import akka.cluster.typed.Join
-import pixels.management.ImageEntity.Image
+import pixels.persistence.ImageEntity.Image
 import org.scalacheck.Gen
-import java.awt.image.BufferedImage
-import java.io.ByteArrayOutputStream
-import javax.imageio.ImageIO
-import java.awt.Color
-import pixels.management.ImageEntity.AddImage
+import pixels.persistence.ImageEntity
+import pixels.persistence.ImageEntity.AddImage
 import akka.Done
 import akka.actor.testkit.typed.scaladsl.TestProbe
-import pixels.management.ImageEntity.GetImage
-import pixels.management.ImageEntity.RemoveImage
+import pixels.persistence.ImageEntity.GetImage
+import pixels.persistence.ImageEntity.RemoveImage
+import pixels.ImageUtils._
 
 class ImageEntitySpec extends WordSpec with Matchers with BeforeAndAfterAll {
 
@@ -65,28 +63,6 @@ class ImageEntitySpec extends WordSpec with Matchers with BeforeAndAfterAll {
       imageEntity ! GetImage(imageProbe.ref)
       imageProbe.expectMessage(None)
     }
-  }
-
-  private def randomImage: Array[Byte] = {
-    val width = 640
-    val height = 320
-    val img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-
-    for (y <- 0 to height - 1) {
-      for (x <- 0 to width - 1) {
-        val r: Int = (Math.random() * 256).toInt
-        val g: Int = (Math.random() * 256).toInt
-        val b: Int = (Math.random() * 256).toInt
-
-        val p = new Color(r, g, b).getRGB()
-        img.setRGB(x, y, p)
-      }
-
-    }
-    val baos = new ByteArrayOutputStream()
-    ImageIO.write(img, "jpg", baos)
-    baos.flush()
-    baos.toByteArray()
   }
 
 }

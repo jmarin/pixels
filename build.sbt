@@ -3,7 +3,7 @@ import Dependencies._
 
 lazy val pixels = (project in file("."))
   .settings(pixelsBuildSettings: _*)
-  .aggregate(common, api)
+  .aggregate(management)
 
 lazy val commonDeps = Seq(logback, scalatest, scalacheck)
 
@@ -41,3 +41,4 @@ lazy val management = (project in file("management"))
       akkaHttpTestkit
     )
   )
+  .dependsOn(common % "compile->compile;test->test")

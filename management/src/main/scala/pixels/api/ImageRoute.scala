@@ -37,8 +37,8 @@ trait ImageRoute {
       implicit val ec = system.dispatchers.lookup(DispatcherSelector.default())
 
       val imageEntity = sharding.entityRefFor(ImageEntity.TypeKey, s"${ImageEntity.name}-$id")
-      get {
 
+      get {
         val fBytes: Future[Array[Byte]] = for {
           image <- (imageEntity ? (ref => GetImage(ref)))
           bytes = image.map(_.bytes).getOrElse(Array.empty[Byte])
@@ -93,7 +93,8 @@ trait ImageRoute {
             case Success(d) =>
               complete(StatusCodes.Created)
             case Failure(e) =>
-              complete(StatusCodes.BadRequest)
+              println(e)
+              complete(StatusCodes.InternalServerError)
           }
         } else {
           complete(StatusCodes.BadRequest)
