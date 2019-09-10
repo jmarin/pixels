@@ -15,7 +15,6 @@ import akka.util.Timeout
 import akka.http.scaladsl.model.StatusCodes
 import pixels.ImageUtils._
 import pixels.persistence.ImageEntity
-import akka.http.scaladsl.model.ContentTypes
 import akka.http.scaladsl.model.MediaTypes
 
 class ImageRouteSpec
