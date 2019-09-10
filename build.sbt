@@ -15,7 +15,9 @@ lazy val common = (project in file("common"))
       akkaTypedClusterSharding,
       akkaStream,
       alpakkaS3,
-      akkaStreamTestkit
+      akkaStreamTestkit,
+      akkaPersistenceCassandra,
+      cassandraLauncher
     )
   )
 
