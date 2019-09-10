@@ -31,7 +31,7 @@ class ImageEntitySpec extends WordSpec with Matchers with BeforeAndAfterAll {
   }
 
   val id = Gen.sample.getOrElse("image1").toString()
-  val bytes = randomImage
+  val bytes = randomImage(640, 320)
 
   val sampleImage = Image(id, bytes)
 

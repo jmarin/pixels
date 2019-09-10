@@ -37,7 +37,7 @@ class ImageRouteSpec
   val url = "/images"
 
   val textFile = multipartFile("some text contents", "sample.txt")
-  val imageFile = multipartFile(randomImage, "sample.jpg")
+  val imageFile = multipartFile(randomImage(640, 320), "sample.jpg")
 
   "Image Managerment Service" should {
     Cluster(typedSystem).manager ! Join(Cluster(typedSystem).selfMember.address)

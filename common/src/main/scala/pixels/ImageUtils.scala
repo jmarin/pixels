@@ -6,9 +6,7 @@ import javax.imageio.ImageIO
 import java.awt.Color
 
 object ImageUtils {
-  def randomImage: Array[Byte] = {
-    val width = 640
-    val height = 320
+  def randomImage(width: Int, height: Int): Array[Byte] = {
     val img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
 
     for (y <- 0 to height - 1) {
