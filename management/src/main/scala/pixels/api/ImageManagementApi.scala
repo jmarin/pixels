@@ -32,7 +32,7 @@ object ImageManagementApi extends App with ImageRoute {
       implicit val materializer: ActorMaterializer = ActorMaterializer()(untypedSystem)
       implicit val ec: ExecutionContext = ctx.system.executionContext
 
-      val routes = uploadRoute ~ imageRoute ~ deleteRoute
+      val routes = uploadRoute ~ imageRoute
 
       val serverBinding: Future[ServerBinding] =
         Http()(untypedSystem).bindAndHandle(routes, host, port)

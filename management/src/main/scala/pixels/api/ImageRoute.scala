@@ -37,27 +37,34 @@ trait ImageRoute {
       implicit val ec = system.dispatchers.lookup(DispatcherSelector.default())
 
       val imageEntity = sharding.entityRefFor(ImageEntity.TypeKey, s"${ImageEntity.name}-$id")
+      get {
 
-      val fBytes: Future[Array[Byte]] = for {
-        image <- (imageEntity ? (ref => GetImage(ref)))
-        bytes = image.map(_.bytes).getOrElse(Array.empty[Byte])
-      } yield bytes
+        val fBytes: Future[Array[Byte]] = for {
+          image <- (imageEntity ? (ref => GetImage(ref)))
+          bytes = image.map(_.bytes).getOrElse(Array.empty[Byte])
+        } yield bytes
 
-      onComplete(fBytes) {
-        case Success(bytes) =>
-          if (bytes.size > 0)
-            complete(HttpEntity(ContentType.Binary(MediaTypes.`image/jpeg`), bytes))
-          else
-            complete(StatusCodes.NotFound)
+        onComplete(fBytes) {
+          case Success(bytes) =>
+            if (bytes.size > 0)
+              complete(HttpEntity(ContentType.Binary(MediaTypes.`image/jpeg`), bytes))
+            else
+              complete(StatusCodes.NotFound)
 
-        case Failure(e) =>
-          complete(StatusCodes.InternalServerError)
-      }
-    }
+          case Failure(e) =>
+            complete(StatusCodes.InternalServerError)
+        }
+      } ~
+        delete {
+          val fRemoved = imageEntity ? (ref => RemoveImage(ref))
 
-  def deleteRoute: Route =
-    path("images" / Segment) { id =>
-      complete("deleted")
+          onComplete(fRemoved) {
+            case Success(done) =>
+              complete(StatusCodes.NoContent)
+            case Failure(e) =>
+              complete(StatusCodes.BadRequest)
+          }
+        }
     }
 
   private def uploadImage(
@@ -84,7 +91,7 @@ trait ImageRoute {
 
           onComplete(fDone) {
             case Success(d) =>
-              complete(StatusCodes.Accepted)
+              complete(StatusCodes.Created)
             case Failure(e) =>
               complete(StatusCodes.BadRequest)
           }
