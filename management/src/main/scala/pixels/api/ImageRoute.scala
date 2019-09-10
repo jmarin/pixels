@@ -10,11 +10,11 @@ import scala.util.{Success, Failure}
 import akka.http.scaladsl.model.MediaTypes
 import akka.cluster.sharding.typed.scaladsl.ClusterSharding
 import akka.stream.scaladsl.Sink
-import pixels.management.ImageEntity
-import pixels.management.ImageEntity.{AddImage, GetImage}
+import pixels.persistence.ImageEntity
+import pixels.persistence.ImageEntity.{AddImage, GetImage}
 import scala.concurrent.Future
 import akka.Done
-import pixels.management.ImageEntity._
+import pixels.persistence.ImageEntity._
 import akka.actor.typed.scaladsl.AskPattern._
 import akka.util.Timeout
 import akka.actor.typed.DispatcherSelector
@@ -45,7 +45,11 @@ trait ImageRoute {
 
       onComplete(fBytes) {
         case Success(bytes) =>
-          complete(HttpEntity(ContentType.Binary(MediaTypes.`image/jpeg`), bytes))
+          if (bytes.size > 0)
+            complete(HttpEntity(ContentType.Binary(MediaTypes.`image/jpeg`), bytes))
+          else
+            complete(StatusCodes.NotFound)
+
         case Failure(e) =>
           complete(StatusCodes.InternalServerError)
       }

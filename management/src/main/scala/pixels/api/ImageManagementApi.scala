@@ -14,7 +14,7 @@ import akka.http.scaladsl.Http.ServerBinding
 import com.typesafe.config.ConfigFactory
 import akka.cluster.sharding.typed.scaladsl.ClusterSharding
 import scala.concurrent.duration._
-import pixels.management.ImageEntity
+import pixels.persistence.ImageEntity
 
 object ImageManagementApi extends App with ImageRoute {
   val config = ConfigFactory.load()

@@ -1,4 +1,4 @@
-package pixels.management
+package pixels.persistence
 
 import akka.actor.typed.ActorRef
 import akka.actor.typed.TypedActorContext
