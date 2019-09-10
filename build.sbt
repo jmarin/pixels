@@ -36,6 +36,8 @@ lazy val management = (project in file("management"))
     libraryDependencies ++= commonDeps ++ Seq(
       akkaTypedClusterSharding,
       akkaStream,
-      akkaPersistenceInMemory
+      akkaPersistenceInMemory,
+      akkaHttp,
+      akkaHttpTestkit
     )
   )

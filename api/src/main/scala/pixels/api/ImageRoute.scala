@@ -8,18 +8,16 @@ import akka.stream.ActorMaterializer
 import scala.util.{Success, Failure}
 import pixels.s3.S3Utils
 import akka.http.scaladsl.model.MediaTypes
+import akka.cluster.sharding.typed.scaladsl.ClusterSharding
 
-trait S3ImageRoute extends S3Utils {
+trait ImageRoute extends S3Utils {
+
+  val sharding: ClusterSharding
 
   def uploadRoute(implicit mat: ActorMaterializer): Route =
-    pathPrefix("upload") {
-      pathEndOrSingleSlash {
-        getFromResource("web/index.html")
-      }
-    } ~
-      path("images") {
-        uploadImage
-      }
+    path("images") {
+      uploadImage
+    }
 
   def deleteRoute: Route =
     path("images" / Segment) { id =>

@@ -7,13 +7,15 @@ import akka.http.scaladsl.testkit.RouteTestTimeout
 import scala.concurrent.duration._
 import akka.testkit.TestDuration
 import org.scalatest.BeforeAndAfterAll
+import akka.cluster.sharding.typed.scaladsl.ClusterSharding
+import akka.actor.typed.scaladsl.adapter._
 
 class UploadRouteSpec
     extends WordSpec
     with Matchers
     with ScalatestRouteTest
     with FileUploadUtils
-    with S3ImageRoute
+    with ImageRoute
     with BeforeAndAfterAll {
 
   implicit val timeout = RouteTestTimeout(5.seconds.dilated)
@@ -27,6 +29,8 @@ class UploadRouteSpec
   override def beforeAll(): Unit = {}
 
   override def afterAll(): Unit = {}
+
+  override val sharding: ClusterSharding = ClusterSharding(system.toTyped)
 
   "Upload Image Service" should {
     "return 400 when trying to upload a file that is not an image" in {

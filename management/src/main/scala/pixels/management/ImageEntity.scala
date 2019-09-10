@@ -52,12 +52,14 @@ object ImageEntity {
               replyTo ! Done
             }
           } else {
+            replyTo ! Done
             Effect.none
           }
 
         case GetImage(replyTo) =>
           replyTo ! state.image
           Effect.none
+
         case RemoveImage(replyTo) =>
           if (state.image.isDefined) {
             Effect.persist(ImageRemoved(entityId)).thenRun { _ =>
@@ -65,6 +67,7 @@ object ImageEntity {
               replyTo ! Done
             }
           } else {
+            replyTo ! Done
             Effect.none
           }
 
