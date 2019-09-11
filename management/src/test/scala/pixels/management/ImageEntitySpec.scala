@@ -1,8 +1,6 @@
 package pixels.management
-import org.scalatest.WordSpec
 import org.scalatest.Matchers
-import org.scalatest.BeforeAndAfterAll
-import akka.actor.testkit.typed.scaladsl.ActorTestKit
+import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import akka.cluster.sharding.typed.scaladsl.ClusterSharding
 import akka.cluster.typed.Cluster
 import akka.cluster.typed.Join
@@ -15,20 +13,12 @@ import akka.actor.testkit.typed.scaladsl.TestProbe
 import pixels.persistence.ImageEntity.GetImage
 import pixels.persistence.ImageEntity.RemoveImage
 import pixels.ImageUtils._
+import org.scalatest.WordSpecLike
 
-class ImageEntitySpec extends WordSpec with Matchers with BeforeAndAfterAll {
-
-  protected val testkit = ActorTestKit("ImageEntityTestKit")
-
-  import testkit._
+class ImageEntitySpec extends ScalaTestWithActorTestKit with WordSpecLike with Matchers {
 
   val sharding = ClusterSharding(system)
   ImageEntity.startShardRegion(sharding)
-
-  override def afterAll(): Unit = {
-    shutdownTestKit()
-    super.afterAll()
-  }
 
   val id = Gen.sample.getOrElse("image1").toString()
   val bytes = randomImage(640, 320)
