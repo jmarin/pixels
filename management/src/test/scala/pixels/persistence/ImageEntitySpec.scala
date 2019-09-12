@@ -1,4 +1,5 @@
-package pixels.management
+package pixels.persistence
+
 import org.scalatest.Matchers
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import akka.cluster.sharding.typed.scaladsl.ClusterSharding

@@ -44,6 +44,7 @@ lazy val management = (project in file("management"))
     )
   )
   .dependsOn(common % "compile->compile;test->test")
+  .dependsOn(metadata % "compile->compile;test->test")
 
 lazy val metadata = (project in file("metadata"))
   .settings(pixelsBuildSettings: _*)
