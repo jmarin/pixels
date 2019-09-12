@@ -23,7 +23,7 @@ object ImageEntity {
   sealed trait ImageCommand
   final case class AddImage(id: String, bytes: Array[Byte], replyTo: ActorRef[Done])
       extends ImageCommand
-  final case class GetImage(replyTo: ActorRef[Option[Image]]) extends ImageCommand
+  final case class GetImage(replyTo: ActorRef[Option[ImageData]]) extends ImageCommand
   final case class RemoveImage(replyTo: ActorRef[Done]) extends ImageCommand
 
   //Event
@@ -32,10 +32,10 @@ object ImageEntity {
   final case class ImageRemoved(id: String) extends ImageEvent
 
   //Reply
-  case class Image(id: String, bytes: Array[Byte])
+  case class ImageData(bytes: Array[Byte])
 
   //State
-  final case class ImageState(image: Option[Image] = None)
+  final case class ImageState(image: Option[ImageData] = None)
 
   //Command Handler
   def commandHandler(
@@ -76,7 +76,7 @@ object ImageEntity {
 
   //Event Handler
   def eventHandler: (ImageState, ImageEvent) => ImageState = {
-    case (state, ImageAdded(id, bytes)) => state.copy(Some(Image(id, bytes)))
+    case (state, ImageAdded(id, bytes)) => state.copy(Some(ImageData(bytes)))
     case (state, ImageRemoved(id))      => state.copy(None)
   }
 

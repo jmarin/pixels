@@ -5,7 +5,7 @@ import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import akka.cluster.sharding.typed.scaladsl.ClusterSharding
 import akka.cluster.typed.Cluster
 import akka.cluster.typed.Join
-import pixels.persistence.ImageEntity.Image
+import pixels.persistence.ImageEntity.ImageData
 import org.scalacheck.Gen
 import pixels.persistence.ImageEntity
 import pixels.persistence.ImageEntity.AddImage
@@ -24,10 +24,10 @@ class ImageEntitySpec extends ScalaTestWithActorTestKit with WordSpecLike with M
   val id = Gen.sample.getOrElse("image1").toString()
   val bytes = randomImage(640, 320)
 
-  val sampleImage = Image(id, bytes)
+  val sampleImage = ImageData(bytes)
 
   val imageDoneProbe = TestProbe[Done]("image-done-probe")
-  val imageProbe = TestProbe[Option[Image]]("image-probe")
+  val imageProbe = TestProbe[Option[ImageData]]("image-probe")
 
   "Image Entity" should {
     Cluster(system).manager ! Join(Cluster(system).selfMember.address)
