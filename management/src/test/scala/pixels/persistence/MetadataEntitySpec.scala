@@ -35,15 +35,14 @@ class MetadataEntitySpec extends ScalaTestWithActorTestKit with WordSpecLike wit
 
       metadataEntity ! AddMetadata(imageMetadata, metadataDoneProbe.ref)
       metadataDoneProbe.expectMessage(Done)
-
     }
+
     "retrieve metadata" in {
       val metadataEntity =
         sharding.entityRefFor(MetadataEntity.TypeKey, s"${MetadataEntity.name}-$id")
 
       metadataEntity ! GetMetadata(metadataProbe.ref)
       metadataProbe.expectMessage(Some(imageMetadata))
-
     }
 
     "remove metadata" in {
