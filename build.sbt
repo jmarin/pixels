@@ -22,17 +22,6 @@ lazy val common = (project in file("common"))
     )
   )
 
-lazy val api = (project in file("api"))
-  .settings(pixelsBuildSettings: _*)
-  .settings(
-    libraryDependencies ++= commonDeps ++ Seq(
-      akkaHttp,
-      akka,
-      akkaHttpTestkit
-    )
-  )
-  .dependsOn(common)
-
 lazy val management = (project in file("management"))
   .settings(pixelsBuildSettings: _*)
   .settings(

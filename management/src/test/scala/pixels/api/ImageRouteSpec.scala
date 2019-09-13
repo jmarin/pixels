@@ -16,6 +16,7 @@ import akka.http.scaladsl.model.StatusCodes
 import pixels.ImageUtils._
 import pixels.persistence.ImageEntity
 import akka.http.scaladsl.model.MediaTypes
+import pixels.persistence.MetadataEntity
 
 class ImageRouteSpec
     extends WordSpec
@@ -33,6 +34,7 @@ class ImageRouteSpec
   implicit val routeTimeout = RouteTestTimeout(timeoutDuration.dilated)
 
   ImageEntity.startShardRegion(sharding)
+  MetadataEntity.startShardRegion(sharding)
 
   val url = "/images"
 
