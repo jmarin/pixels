@@ -1,11 +1,10 @@
 package pixels.algebra.repository
 
-import scala.language.higherKinds
 import pixels.model.Image
-import cats.data.OptionT
+import scala.concurrent.Future
 
-trait ImageRepository[F[_]] {
-  def add(bytes: Array[Byte]): F[String]
-  def get(): F[Image]
-  def remove(id: String): F[String]
+trait ImageRepository {
+  def add(bytes: Array[Byte]): Future[String]
+  def get(): Future[Image]
+  def remove(id: String): Future[String]
 }

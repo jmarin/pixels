@@ -40,8 +40,7 @@ lazy val management = (project in file("management"))
       akkaStream,
       akkaPersistenceInMemory,
       akkaHttp,
-      akkaHttpTestkit,
-      cats
+      akkaHttpTestkit
     )
   )
   .dependsOn(common % "compile->compile;test->test")
