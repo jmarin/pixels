@@ -12,17 +12,18 @@ import java.io.ByteArrayOutputStream
 import java.awt.image.BufferedImage
 import java.awt.Color
 
-class ImageServiceImpl(val imageRepository: ImageRepository)(implicit ec: ExecutionContext)
-    extends ImageService {
+class ImageServiceImpl(id: String, val imageRepository: ImageRepository)(
+    implicit ec: ExecutionContext
+) extends ImageService {
 
   override def addImage(bytes: Array[Byte]): Future[String] = imageRepository.add(bytes)
 
-  override def get(): Future[Image] = imageRepository.get()
+  override def get: Future[Image] = imageRepository.get
 
   override def remove(id: String): Future[String] = imageRepository.remove(id)
 
   override def getImageData: Future[ImageData] =
-    imageRepository.get().map(_.data)
+    imageRepository.get.map(_.data)
 
   override def monochrome(image: Image): Image = {
     val bufferedImage = ImageIO.read(new ByteArrayInputStream(image.data.bytes))
@@ -64,5 +65,11 @@ class ImageServiceImpl(val imageRepository: ImageRepository)(implicit ec: Execut
     val scaledBytes = outputStream.toByteArray()
     Image(ImageData(scaledBytes), image.metadata.copy(width = width, height = height))
   }
+}
 
+object ImageServiceImpl {
+  def apply(id: String, repository: ImageRepository)(
+      implicit ec: ExecutionContext
+  ): ImageServiceImpl =
+    new ImageServiceImpl(id, repository)
 }

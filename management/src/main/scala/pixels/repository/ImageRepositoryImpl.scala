@@ -42,7 +42,7 @@ class ImageRepositoryImpl(id: String, sharding: ClusterSharding)(
 
   }
 
-  override def get(): Future[Image] = {
+  override def get: Future[Image] = {
 
     val dataF: Future[ImageData] =
       imageEntity ? (ref => ImageEntity.GetImage(ref)) map (
@@ -70,4 +70,11 @@ class ImageRepositoryImpl(id: String, sharding: ClusterSharding)(
     } yield id
   }
 
+}
+
+object ImageRepositoryImpl {
+  def apply(id: String, sharding: ClusterSharding)(
+      implicit ec: ExecutionContext
+  ): ImageRepositoryImpl =
+    new ImageRepositoryImpl(id, sharding)
 }

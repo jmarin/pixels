@@ -3,23 +3,20 @@ package pixels.api
 import akka.actor.typed.ActorSystem
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.marshalling.ToResponseMarshallable
 import akka.http.scaladsl.model.StatusCodes
 import akka.stream.ActorMaterializer
 import scala.util.{Success, Failure}
 import akka.http.scaladsl.model.MediaTypes
 import akka.cluster.sharding.typed.scaladsl.ClusterSharding
 import akka.stream.scaladsl.Sink
-import pixels.persistence.ImageEntity
-import pixels.persistence.ImageEntity.{AddImage, GetImage}
 import scala.concurrent.Future
-import akka.Done
-import pixels.persistence.ImageEntity._
 import akka.actor.typed.scaladsl.AskPattern._
 import akka.util.Timeout
 import akka.actor.typed.DispatcherSelector
 import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.model.ContentType
+import pixels.repository.ImageRepositoryImpl
+import pixels.service.ImageServiceImpl
 
 trait ImageRoute {
 
@@ -35,14 +32,9 @@ trait ImageRoute {
   def imageRoute(implicit system: ActorSystem[_]): Route =
     path("images" / Segment) { id =>
       implicit val ec = system.dispatchers.lookup(DispatcherSelector.default())
-
-      val imageEntity = sharding.entityRefFor(ImageEntity.TypeKey, s"${ImageEntity.name}-$id")
-
+      val imageService = ImageServiceImpl(id, ImageRepositoryImpl(id, sharding))
       get {
-        val fBytes: Future[Array[Byte]] = for {
-          image <- (imageEntity ? (ref => GetImage(ref)))
-          bytes = image.map(_.bytes).getOrElse(Array.empty[Byte])
-        } yield bytes
+        val fBytes: Future[Array[Byte]] = imageService.get.map(_.data.bytes)
 
         onComplete(fBytes) {
           case Success(bytes) =>
@@ -56,7 +48,7 @@ trait ImageRoute {
         }
       } ~
         delete {
-          val fRemoved = imageEntity ? (ref => RemoveImage(ref))
+          val fRemoved = imageService.remove(id)
 
           onComplete(fRemoved) {
             case Success(done) =>
@@ -80,17 +72,16 @@ trait ImageRoute {
 
           val id = metadata.fileName
 
-          val imageEntity =
-            sharding.entityRefFor(ImageEntity.TypeKey, s"${ImageEntity.name}-$id")
+          val imageService = ImageServiceImpl(id, ImageRepositoryImpl(id, sharding))
 
-          val fDone: Future[Done] = for {
+          val fAdded: Future[String] = for {
             byteString <- byteSource.runWith(Sink.seq)
             bytes = byteString.flatMap(_.toList).toArray
-            done <- imageEntity ? (ref => AddImage(id, bytes, ref))
-          } yield done
+            i <- imageService.addImage(bytes)
+          } yield i
 
-          onComplete(fDone) {
-            case Success(d) =>
+          onComplete(fAdded) {
+            case Success(i) =>
               complete(StatusCodes.Created)
             case Failure(e) =>
               println(e)

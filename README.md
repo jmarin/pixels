@@ -1,12 +1,13 @@
 # pixels
 Demo of cloud photo management system built as a set of microservices with Akka Typed
 
-## Configuration
+## Dependencies
 
-In order to be able to upload images to S3, AWS credentials need to be provided before running the software:
+Run a cassandra docker container as follows:
 
-```shell
-export AWS_ACCESS_KEY_ID=<access key>
-export AWS_SECRET_ACCESS_KEY=<secret key>
-export AWS_REGION=<region>
-```
+`docker run -it -p 9042:9042 cassandra`
+
+and configure the application to access it: 
+
+`export CASSANDRA_CLUSTER_HOSTS=<docker environment ip>`
+

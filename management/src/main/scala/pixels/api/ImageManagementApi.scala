@@ -15,6 +15,7 @@ import com.typesafe.config.ConfigFactory
 import akka.cluster.sharding.typed.scaladsl.ClusterSharding
 import scala.concurrent.duration._
 import pixels.persistence.ImageEntity
+import pixels.persistence.MetadataEntity
 
 object ImageManagementApi extends App with ImageRoute {
   val config = ConfigFactory.load()
@@ -56,5 +57,6 @@ object ImageManagementApi extends App with ImageRoute {
   override val sharding: ClusterSharding = ClusterSharding(system)
 
   ImageEntity.startShardRegion(sharding)
+  MetadataEntity.startShardRegion(sharding)
 
 }
