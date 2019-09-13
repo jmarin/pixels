@@ -16,6 +16,7 @@ import akka.cluster.sharding.typed.scaladsl.Entity
 import akka.actor.typed.SupervisorStrategy
 import scala.concurrent.duration._
 import akka.Done
+import pixels.model.ImageData
 
 object ImageEntity {
 
@@ -30,9 +31,6 @@ object ImageEntity {
   sealed trait ImageEvent
   final case class ImageAdded(id: String, bytes: Array[Byte]) extends ImageEvent
   final case class ImageRemoved(id: String) extends ImageEvent
-
-  //Reply
-  case class ImageData(bytes: Array[Byte])
 
   //State
   final case class ImageState(image: Option[ImageData] = None)

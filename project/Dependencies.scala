@@ -24,4 +24,5 @@ object Dependencies {
   lazy val cassandraLauncher = "com.typesafe.akka" %% "akka-persistence-cassandra-launcher" % Version.akkaPersistenceCassandra
   lazy val akkaPersistenceInMemory = "com.github.dnvriend" %% "akka-persistence-inmemory" % Version.akkaPersistenceInMemory % Test
   lazy val commonsImaging = "org.apache.commons" % "commons-imaging" % Version.commonsImaging
+  lazy val cats = "org.typelevel" %% "cats-core" % Version.cats
 }

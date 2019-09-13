@@ -5,7 +5,7 @@ import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import akka.cluster.sharding.typed.scaladsl.ClusterSharding
 import akka.cluster.typed.Cluster
 import akka.cluster.typed.Join
-import pixels.persistence.ImageEntity.ImageData
+import pixels.model.ImageData
 import org.scalacheck.Gen
 import pixels.persistence.ImageEntity
 import pixels.persistence.ImageEntity.AddImage
