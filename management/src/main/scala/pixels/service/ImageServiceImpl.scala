@@ -25,7 +25,7 @@ class ImageServiceImpl(id: String, val imageRepository: ImageRepository)(
   override def getImageData: Future[ImageData] =
     imageRepository.get.map(_.data)
 
-  override def monochrome(image: Image): Image = {
+  override def grayscale(image: Image): Image = {
     val bufferedImage = ImageIO.read(new ByteArrayInputStream(image.data.bytes))
     val result = new BufferedImage(
       image.metadata.width,

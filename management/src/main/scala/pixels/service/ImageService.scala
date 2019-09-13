@@ -11,5 +11,5 @@ trait ImageService {
   def getImageData: Future[ImageData]
   def remove(id: String): Future[String]
   def resize(image: Image, width: Int, height: Int): Image
-  def monochrome(image: Image): Image
+  def grayscale(image: Image): Image
 }

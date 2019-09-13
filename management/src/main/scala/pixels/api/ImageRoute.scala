@@ -17,6 +17,7 @@ import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.model.ContentType
 import pixels.repository.ImageRepositoryImpl
 import pixels.service.ImageServiceImpl
+import pixels.model.Image
 
 trait ImageRoute {
 
@@ -34,17 +35,30 @@ trait ImageRoute {
       implicit val ec = system.dispatchers.lookup(DispatcherSelector.default())
       val imageService = ImageServiceImpl(id, ImageRepositoryImpl(id, sharding))
       get {
-        val fBytes: Future[Array[Byte]] = imageService.get.map(_.data.bytes)
+        parameters('scale.as[Double] ? 1.0, 'monochrome.as[Boolean] ? false) { (s, m) =>
+          val fImage: Future[Image] = imageService.get
+            .map(i => if (m) imageService.grayscale(i) else i)
+            .map(
+              i =>
+                if (s < 1)
+                  imageService
+                    .resize(i, (i.metadata.width * s).toInt, (i.metadata.height * s).toInt)
+                else
+                  i
+            )
 
-        onComplete(fBytes) {
-          case Success(bytes) =>
-            if (bytes.size > 0)
-              complete(HttpEntity(ContentType.Binary(MediaTypes.`image/jpeg`), bytes))
-            else
-              complete(StatusCodes.NotFound)
+          val fBytes = fImage.map(_.data.bytes)
 
-          case Failure(e) =>
-            complete(StatusCodes.InternalServerError)
+          onComplete(fBytes) {
+            case Success(bytes) =>
+              if (bytes.size > 0)
+                complete(HttpEntity(ContentType.Binary(MediaTypes.`image/jpeg`), bytes))
+              else
+                complete(StatusCodes.NotFound)
+
+            case Failure(e) =>
+              complete(StatusCodes.InternalServerError)
+          }
         }
       } ~
         delete {
