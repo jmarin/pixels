@@ -1,4 +1,4 @@
-package pixels.algebra.repository
+package pixels.repository
 
 import pixels.model.Image
 import scala.concurrent.Future

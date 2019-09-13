@@ -1,10 +1,9 @@
-package pixels.interpreter.repository
+package pixels.repository
 
 import akka.Done
 import akka.cluster.sharding.typed.scaladsl.ClusterSharding
 import pixels.persistence.ImageEntity
 import pixels.persistence.MetadataEntity
-import pixels.algebra.repository.ImageRepository
 import scala.concurrent.Future
 import pixels.model.Image
 import scala.concurrent.duration._
