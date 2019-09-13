@@ -12,13 +12,8 @@ lazy val common = (project in file("common"))
   .settings(
     libraryDependencies ++= commonDeps ++ Seq(
       commonsImaging,
-      imageScaling,
-      akkaTyped,
-      akkaTypedClusterSharding,
-      akkaStream,
-      alpakkaS3,
-      akkaStreamTestkit,
-      akkaPersistenceCassandra
+      akkaHttp,
+      akkaStream
     )
   )
 
@@ -26,11 +21,14 @@ lazy val management = (project in file("management"))
   .settings(pixelsBuildSettings: _*)
   .settings(
     libraryDependencies ++= commonDeps ++ Seq(
+      akkaTyped,
       akkaTypedClusterSharding,
       akkaStream,
       akkaPersistenceInMemory,
+      akkaPersistenceCassandra,
       akkaHttp,
-      akkaHttpTestkit
+      akkaHttpTestkit,
+      imageScaling
     )
   )
   .dependsOn(common % "compile->compile;test->test")
@@ -40,9 +38,7 @@ lazy val metadata = (project in file("metadata"))
   .settings(pixelsBuildSettings: _*)
   .settings(
     libraryDependencies ++= commonDeps ++ Seq(
-      akkaTypedClusterSharding,
-      akkaPersistenceInMemory,
-      akkaPersistenceCassandra
+      commonsImaging
     )
   )
   .dependsOn(common % "compile->compile;test->test")
