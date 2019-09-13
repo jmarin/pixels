@@ -12,6 +12,7 @@ lazy val common = (project in file("common"))
   .settings(
     libraryDependencies ++= commonDeps ++ Seq(
       commonsImaging,
+      imageScaling,
       akkaTyped,
       akkaTypedClusterSharding,
       akkaStream,

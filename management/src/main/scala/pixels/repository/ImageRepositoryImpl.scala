@@ -15,7 +15,7 @@ import pixels.persistence.MetadataEntity.GetMetadata
 import pixels.model.ImageData
 import pixels.metadata.ImageMetadata
 
-class ImageRepositoryInterpreter(id: String, sharding: ClusterSharding)(
+class ImageRepositoryImpl(id: String, sharding: ClusterSharding)(
     implicit ec: ExecutionContext
 ) extends ImageRepository {
 
