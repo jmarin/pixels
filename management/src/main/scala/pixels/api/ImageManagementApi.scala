@@ -1,6 +1,6 @@
 package pixels.api
 
-import akka.actor.typed.ActorSystem
+import akka.actor.typed.{ActorSystem, ActorRef}
 import akka.actor.typed.scaladsl.Behaviors
 import scala.concurrent.ExecutionContext
 import akka.stream.ActorMaterializer
@@ -16,15 +16,20 @@ import akka.cluster.sharding.typed.scaladsl.ClusterSharding
 import scala.concurrent.duration._
 import pixels.persistence.ImageEntity
 import pixels.persistence.MetadataEntity
+import pixels.projection.ResumableProjection
+import akka.cluster.typed.ClusterSingleton
+import akka.cluster.typed.SingletonActor
+import akka.stream.ActorAttributes.SupervisionStrategy
+import akka.actor.typed.SupervisorStrategy
 
 object ImageManagementApi extends App with ImageRoute {
   val config = ConfigFactory.load()
 
-  val name = config.getString("pixels.api.http.name")
-  val host: String = config.getString("pixels.api.http.host")
-  val port: Int = config.getInt("pixels.api.http.port")
+  val name = config.getString("pixels.management.api.http.name")
+  val host: String = config.getString("pixels.management.api.http.host")
+  val port: Int = config.getInt("pixels.management.api.http.port")
 
-  implicit val timeout = config.getInt("pixels.api.http.timeout").seconds
+  implicit val timeout = config.getInt("pixels.management.api.http.timeout").seconds
 
   val system = ActorSystem[Done](
     Behaviors.setup { ctx =>
@@ -37,6 +42,19 @@ object ImageManagementApi extends App with ImageRoute {
 
       val serverBinding: Future[ServerBinding] =
         Http()(untypedSystem).bindAndHandle(routes, host, port)
+
+      val singletonManager = ClusterSingleton(system)
+
+      val projection: ActorRef[ResumableProjection.ProjectionCommand] = singletonManager.init(
+        SingletonActor(
+          Behaviors
+            .supervise(ResumableProjection.behavior("metadata"))
+            .onFailure[Exception](SupervisorStrategy.restartWithBackoff(1.second, 10.seconds, 0.2)),
+          "MetadataProjection"
+        )
+      )
+
+      projection ! ResumableProjection.StartStreaming
 
       serverBinding.onComplete {
         case Success(bound) =>

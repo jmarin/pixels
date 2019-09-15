@@ -32,8 +32,6 @@ object MetadataEntity {
   final case class MetadataAdded(metadata: ImageMetadata) extends MetadataEvent
   final case object MetadataRemoved extends MetadataEvent
 
-  //Reply
-
   //State
   case class MetadataState(metadata: Option[ImageMetadata])
 
@@ -99,7 +97,7 @@ object MetadataEntity {
         emptyState = MetadataState(None),
         commandHandler = commandHandler(ctx, entityId),
         eventHandler = eventHandler
-      )
+      ).withTagger(_ => Set("metadata"))
     }
 
   def supervisedBehavior(entityId: String): Behavior[MetadataCommand] =

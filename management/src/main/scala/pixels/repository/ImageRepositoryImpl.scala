@@ -20,7 +20,7 @@ class ImageRepositoryImpl(id: String, sharding: ClusterSharding)(
 ) extends ImageRepository {
 
   val config = ConfigFactory.load()
-  val futureTimeout = config.getInt("pixels.future.timeout")
+  val futureTimeout = config.getInt("pixels.management.future.timeout")
 
   implicit val timeout = Timeout(futureTimeout.seconds)
 

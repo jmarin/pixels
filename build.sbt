@@ -3,7 +3,7 @@ import Dependencies._
 
 lazy val pixels = (project in file("."))
   .settings(pixelsBuildSettings: _*)
-  .aggregate(management, metadata)
+  .aggregate(management, metadata, search)
 
 lazy val commonDeps = Seq(logback, scalatest, scalacheck)
 
@@ -42,3 +42,18 @@ lazy val metadata = (project in file("metadata"))
     )
   )
   .dependsOn(common % "compile->compile;test->test")
+
+lazy val search = (project in file("search"))
+  .settings(pixelsBuildSettings: _*)
+  .settings(
+    libraryDependencies ++= commonDeps ++ Seq(
+      akkaTypedPersistence,
+      akkaPersistenceInMemory,
+      akkaPersistenceCassandra,
+      akkaPersistenceQuery,
+      akkaTyped,
+      akkaHttp,
+      akkaStream,
+      akkaStreamTyped
+    )
+  )
