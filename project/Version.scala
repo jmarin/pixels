@@ -10,4 +10,6 @@ object Version {
   val commonsImaging = "1.0-alpha1"
   val imageScaling = "0.8.6"
   val slick = "3.3.2"
+  val h2 = "1.4.199"
+  val postgres = "42.2.8"
 }

@@ -1,7 +1,7 @@
-package pixels.common.db.model
+package pixels.db.model
 
 case class ImageMetadataDbEntity(
-    name: String,
+    id: String,
     width: Int = 0,
     height: Int = 0,
     focalLength: Int = 0,

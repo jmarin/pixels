@@ -23,31 +23,31 @@ object PixelsSearchMain extends App with SearchRoute {
 
   implicit val timeout = config.getInt("pixels.search.api.http.timeout").seconds
 
-  val system = ActorSystem[Done](
-    Behaviors.setup { ctx =>
-      implicit val system = ctx.system
-      implicit val untypedSystem = ctx.system.toUntyped
-      implicit val materializer: ActorMaterializer = ActorMaterializer()(untypedSystem)
-      implicit val ec: ExecutionContext = ctx.system.executionContext
+  // val system = ActorSystem[Done](
+  //   Behaviors.setup { ctx =>
+  //     implicit val system = ctx.system
+  //     implicit val untypedSystem = ctx.system.toUntyped
+  //     implicit val materializer: ActorMaterializer = ActorMaterializer()(untypedSystem)
+  //     implicit val ec: ExecutionContext = ctx.system.executionContext
 
-      val routes = searchRoute
+  //     val routes = searchRoute
 
-      val serverBinding: Future[ServerBinding] =
-        Http()(untypedSystem).bindAndHandle(routes, host, port)
+  //     val serverBinding: Future[ServerBinding] =
+  //       Http()(untypedSystem).bindAndHandle(routes, host, port)
 
-      serverBinding.onComplete {
-        case Success(bound) =>
-          println(s"Service $name running at $host:$port")
-        case Failure(e) =>
-          e.printStackTrace()
-          ctx.self ! Done
-      }
+  //     serverBinding.onComplete {
+  //       case Success(bound) =>
+  //         println(s"Service $name running at $host:$port")
+  //       case Failure(e) =>
+  //         e.printStackTrace()
+  //         ctx.self ! Done
+  //     }
 
-      Behaviors.receiveMessage {
-        case Done => Behaviors.stopped
-      }
-    },
-    name
-  )
+  //     Behaviors.receiveMessage {
+  //       case Done => Behaviors.stopped
+  //     }
+  //   },
+  //   name
+  // )
 
 }

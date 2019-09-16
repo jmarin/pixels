@@ -30,7 +30,9 @@ lazy val management = (project in file("management"))
       akkaPersistenceCassandra,
       akkaHttp,
       akkaHttpTestkit,
-      imageScaling
+      imageScaling,
+      postgres,
+      h2
     )
   )
   .dependsOn(common % "compile->compile;test->test")

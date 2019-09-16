@@ -29,4 +29,7 @@ object Dependencies {
   lazy val imageScaling = "com.mortennobel" % "java-image-scaling" % Version.imageScaling
   lazy val slick = "com.typesafe.slick" %% "slick" % Version.slick
   lazy val slickHikaricp = "com.typesafe.slick" %% "slick-hikaricp" % Version.slick
+  lazy val postgres = "org.postgresql" % "postgresql" % Version.postgres
+  lazy val h2 = "com.h2database" % "h2" % Version.h2 % Test
+
 }
