@@ -36,7 +36,23 @@ class MetadataComponentSpec
   "Metadata component" should {
     "be able to insert, read and delete metadata records" in {
       val metadataEntity = imageMetadataDbEntityGenerator.sample.get
+
       repository.insertOrUpdate(metadataEntity).map(i => i shouldBe i)
+
+      repository.findById(metadataEntity.id).map {
+        case Some(m) => {
+          m.id shouldBe metadataEntity.id
+          m.aperture shouldBe metadataEntity.aperture
+        }
+        case None => fail("Could not retrieve data")
+      }
+
+      repository.deleteById(metadataEntity.id).map(i => i shouldBe 1)
+
+      repository.findById(metadataEntity.id).map {
+        case Some(m) => fail("Deletion failed")
+        case None    => succeed
+      }
     }
   }
 
