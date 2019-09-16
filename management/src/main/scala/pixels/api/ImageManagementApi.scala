@@ -21,8 +21,10 @@ import akka.cluster.typed.ClusterSingleton
 import akka.cluster.typed.SingletonActor
 import akka.stream.ActorAttributes.SupervisionStrategy
 import akka.actor.typed.SupervisorStrategy
+import pixels.query.MetadataComponent
+import pixels.common.db.DbConfiguration._
 
-object ImageManagementApi extends App with ImageRoute {
+object ImageManagementApi extends App with ImageRoute with MetadataComponent {
   val config = ConfigFactory.load()
 
   val name = config.getString("pixels.management.api.http.name")
@@ -44,6 +46,10 @@ object ImageManagementApi extends App with ImageRoute {
         Http()(untypedSystem).bindAndHandle(routes, host, port)
 
       val singletonManager = ClusterSingleton(system)
+
+      val metadataDbRepository = new MetadataDbRepository(dbConfig)
+
+      metadataDbRepository.createSchema().map(_ => println("Database schema created"))
 
       val projection: ActorRef[ResumableProjection.ProjectionCommand] = singletonManager.init(
         SingletonActor(
