@@ -13,7 +13,9 @@ lazy val common = (project in file("common"))
     libraryDependencies ++= commonDeps ++ Seq(
       commonsImaging,
       akkaHttp,
-      akkaStream
+      akkaStream,
+      slick,
+      slickHikaricp
     )
   )
 

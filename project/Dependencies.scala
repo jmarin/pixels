@@ -27,4 +27,6 @@ object Dependencies {
   lazy val akkaPersistenceInMemory = "com.github.dnvriend" %% "akka-persistence-inmemory" % Version.akkaPersistenceInMemory % Test
   lazy val commonsImaging = "org.apache.commons" % "commons-imaging" % Version.commonsImaging
   lazy val imageScaling = "com.mortennobel" % "java-image-scaling" % Version.imageScaling
+  lazy val slick = "com.typesafe.slick" %% "slick" % Version.slick
+  lazy val slickHikaricp = "com.typesafe.slick" %% "slick-hikaricp" % Version.slick
 }
