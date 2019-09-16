@@ -21,10 +21,10 @@ import akka.cluster.typed.ClusterSingleton
 import akka.cluster.typed.SingletonActor
 import akka.stream.ActorAttributes.SupervisionStrategy
 import akka.actor.typed.SupervisorStrategy
-import pixels.query.MetadataComponent
+import pixels.query.MetadataComponent._
 import pixels.common.db.DbConfiguration._
 
-object ImageManagementApi extends App with ImageRoute with MetadataComponent {
+object ImageManagementApi extends App with ImageRoute {
   val config = ConfigFactory.load()
 
   val name = config.getString("pixels.management.api.http.name")
@@ -54,7 +54,7 @@ object ImageManagementApi extends App with ImageRoute with MetadataComponent {
       val projection: ActorRef[ResumableProjection.ProjectionCommand] = singletonManager.init(
         SingletonActor(
           Behaviors
-            .supervise(ResumableProjection.behavior("metadata"))
+            .supervise(ResumableProjection.behavior("metadata", Some(metadataDbRepository)))
             .onFailure[Exception](SupervisorStrategy.restartWithBackoff(1.second, 10.seconds, 0.2)),
           "MetadataProjection"
         )

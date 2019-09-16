@@ -24,6 +24,11 @@ import akka.actor.typed.DispatcherSelector
 import akka.stream.ActorMaterializer
 import akka.actor.typed.scaladsl.adapter._
 import scala.concurrent.ExecutionContext
+import pixels.query.MetadataComponent.MetadataDbRepository
+import pixels.common.db.DbConfiguration._
+import pixels.db.model.ImageMetadataDbEntity
+import pixels.persistence.MetadataEntity
+import pixels.metadata.ImageMetadata
 
 object ResumableProjection extends PersistenceQuery {
 
@@ -44,26 +49,28 @@ object ResumableProjection extends PersistenceQuery {
   //State
   case class ProjectionState(offset: Offset = NoOffset)
 
-  def behavior(tag: String): Behavior[ProjectionCommand] = Behaviors.setup { ctx =>
-    EventSourcedBehavior[ProjectionCommand, ProjectionEvent, ProjectionState](
-      persistenceId = PersistenceId(name),
-      emptyState = ProjectionState(),
-      commandHandler = commandHandler(ctx, tag),
-      eventHandler = eventHandler
-    ).receiveSignal {
-      case (_, _: PostRestart) => ctx.self ! StartStreaming
+  def behavior(tag: String, repository: Option[MetadataDbRepository]): Behavior[ProjectionCommand] =
+    Behaviors.setup { ctx =>
+      EventSourcedBehavior[ProjectionCommand, ProjectionEvent, ProjectionState](
+        persistenceId = PersistenceId(name),
+        emptyState = ProjectionState(),
+        commandHandler = commandHandler(ctx, tag, repository),
+        eventHandler = eventHandler
+      ).receiveSignal {
+        case (_, _: PostRestart) => ctx.self ! StartStreaming
+      }
     }
-  }
 
   def commandHandler(
       ctx: TypedActorContext[ProjectionCommand],
-      tag: String
+      tag: String,
+      repository: Option[MetadataDbRepository]
   ): CommandHandler[ProjectionCommand, ProjectionEvent, ProjectionState] = { (state, cmd) =>
     val log = ctx.asScala.log
     cmd match {
       case StartStreaming =>
         log.info("Start Streaming for events tagged with {}", tag)
-        runQueryStream(ctx, tag)
+        runQueryStream(ctx, tag, repository)
 
         Effect.none
       case SaveOffset(offset, replyTo) =>
@@ -83,7 +90,11 @@ object ResumableProjection extends PersistenceQuery {
     case (state, OffsetSaved(offset)) => state.copy(offset = offset)
   }
 
-  private def runQueryStream(ctx: TypedActorContext[ProjectionCommand], tag: String): Unit = {
+  private def runQueryStream(
+      ctx: TypedActorContext[ProjectionCommand],
+      tag: String,
+      repository: Option[MetadataDbRepository]
+  ): Unit = {
     val log = ctx.asScala.log
     val self = ctx.asScala.self
     implicit val system = ctx.asScala.system
@@ -103,7 +114,7 @@ object ResumableProjection extends PersistenceQuery {
             log.info("Streaming events for tag [{}] from offset [{}]", tag, offset)
             readJournal(ctx.asScala.system)
               .eventsByTag(tag, offset)
-              .mapAsync(1)(env => projectEvent(ctx, env))
+              .mapAsync(1)(env => projectEvent(ctx, env, repository))
           }
         }
       }
@@ -112,10 +123,54 @@ object ResumableProjection extends PersistenceQuery {
 
   def projectEvent(
       ctx: TypedActorContext[ProjectionCommand],
-      envelope: EventEnvelope
-  )(implicit ec: ExecutionContext): Future[EventEnvelope] = {
+      envelope: EventEnvelope,
+      repository: Option[MetadataDbRepository]
+  )(implicit ec: ExecutionContext): Future[Int] = {
     val log = ctx.asScala.log
     log.info("Projecting event envelope {}", envelope.toString())
-    Future(envelope)
+    val r = repository.getOrElse(new MetadataDbRepository(dbConfig))
+    envelope.event match {
+      case MetadataEntity.MetadataAdded(m) =>
+        insertMetadata(envelope.persistenceId, m, r)
+      case MetadataEntity.MetadataRemoved =>
+        removeMetadata(envelope.persistenceId, r)
+      case e: Any =>
+        log.info(s"Cannot project event of type: $e")
+        Future.successful(0)
+    }
+  }
+
+  private def insertMetadata(
+      id: String,
+      metadata: ImageMetadata,
+      repository: MetadataDbRepository
+  )(implicit ec: ExecutionContext): Future[Int] = {
+    for {
+      i <- repository.insertOrUpdate(convertMetadataToEntity(id, metadata))
+    } yield i
+  }
+
+  private def removeMetadata(id: String, repository: MetadataDbRepository)(
+      implicit ec: ExecutionContext
+  ): Future[Int] = {
+    for {
+      i <- repository.deleteById(id)
+    } yield i
+  }
+
+  private def convertMetadataToEntity(
+      id: String,
+      metadata: ImageMetadata
+  ): ImageMetadataDbEntity = {
+
+    ImageMetadataDbEntity(
+      id,
+      metadata.width,
+      metadata.height,
+      metadata.focalLength,
+      metadata.aperture,
+      metadata.exposure,
+      metadata.ISO
+    )
   }
 }

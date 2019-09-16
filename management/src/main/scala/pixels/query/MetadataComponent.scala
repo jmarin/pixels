@@ -6,7 +6,7 @@ import pixels.common.db.DbConfiguration._
 import pixels.db.model.ImageMetadataDbEntity
 import pixels.common.db.TableRepository
 
-trait MetadataComponent {
+object MetadataComponent {
 
   import dbConfig.profile.api._
 

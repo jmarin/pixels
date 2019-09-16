@@ -1,22 +1,15 @@
 package pixels.query
 
 import ImageMetadataDbEntityGenerator._
-import org.scalatest.AsyncWordSpecLike
 import org.scalatest.Matchers
 import org.scalatest.BeforeAndAfterAll
-import org.scalatest.PropSpec
-import org.scalatest.prop.PropertyChecks
-import slick.dbio.DBIOAction
 import pixels.common.db.DbConfiguration._
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import org.scalatest.AsyncWordSpec
+import pixels.query.MetadataComponent.MetadataDbRepository
 
-class MetadataComponentSpec
-    extends AsyncWordSpec
-    with Matchers
-    with BeforeAndAfterAll
-    with MetadataComponent {
+class MetadataComponentSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll {
 
   implicit val repository = new MetadataDbRepository(dbConfig)
   val db = repository.db
