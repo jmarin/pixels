@@ -13,7 +13,7 @@ docker run -it -p 5432:5432 postgres
 and configure the application to access it: 
 
 ```shell
-export HOST=localhost
+export HOST=<docker ip>
 export CASSANDRA_CLUSTER_HOSTS=$HOST
 export PG_HOST=$HOST
 ```
